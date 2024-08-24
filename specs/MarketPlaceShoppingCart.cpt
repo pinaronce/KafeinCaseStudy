@@ -1,0 +1,7 @@
+Created by pinar.once on 22.08.2024
+
+This is a concept file with following syntax for each concept.
+# If there are products in the shopping cart, they are removed
+* Click on "market place navbar" page's "my cart button" element
+* Wait "4" seconds
+* Click on the "market place shopping cart" page's "remove product button" element if it exists

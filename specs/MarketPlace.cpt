@@ -1,0 +1,8 @@
+Created by pinar.once on 21.08.2024
+
+This is a concept file with following syntax for each concept.
+# Navigate to the website of the marketplace that offers the lowest price
+* Click on "cimri product details" page's "go to store button" element
+* Switch to the new tab at index "1"
+* Click on "market place product details" page's "cookie accept button" element
+* Click on the "market place product details" page's "understood button" element if it exists

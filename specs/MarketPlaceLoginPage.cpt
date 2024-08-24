@@ -1,0 +1,13 @@
+Created by pinar.once on 21.08.2024
+
+This is a concept file with following syntax for each concept.
+# Login with username <username> and password <password>
+* Wait "2" seconds
+* Click on "market place navbar" page's "go to login button" element
+* Write <username> to the "market place login" page's "email input" element
+* Write <password> to the "market place login" page's "password input" element
+* Click on "market place login" page's "login button" element
+* Wait "5" seconds
+* Verify "market place navbar" page's "account username" element exists, fail with "Login failed, please check!" if absent
+* Click on "market place navbar" page's "account username" element
+* Verify "market place account" page's "user info section" element exists, fail with "Unable to log in at the marketplace, please check!" if absent

@@ -1,0 +1,14 @@
+Created by pinar.once on 21.08.2024
+
+This is a concept file with following syntax for each concept.
+# Search for the product <productName> in the market place and verify that the listed products are correct
+* Write <productName> to the "market place search" page's "search input" element
+* Press Enter key on the "market place search" page on the "search input" element
+
+# Click on the lowest price button to go to the product detail page in the marketplace
+* Click on "market place search" page's "product listing dropdown menu" element
+* Wait "2" seconds
+* Click on "market place search" page's "lowest price dropdown option" element
+* Wait "2" seconds
+* Click on "market place search" page's "first product" element
+* Switch to the new tab at index "2"

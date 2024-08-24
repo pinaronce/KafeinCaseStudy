@@ -1,0 +1,6 @@
+Created by pinar.once on 21.08.2024
+
+This is a concept file with following syntax for each concept.
+# The product is added to the cart and its addition is verified
+* Click on "market place product details" page's "add to cart button" element
+* Verify that the text of "market place product details" page's "success message" element is "Ürün Sepete Eklendi!"
