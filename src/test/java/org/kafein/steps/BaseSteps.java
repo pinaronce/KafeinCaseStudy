@@ -15,18 +15,17 @@ import java.util.Map;
 public class BaseSteps extends DriverManager {
     private static final Logger logger = LogManager.getLogger(BaseSteps.class);
     private final BaseMethods baseMethods = new BaseMethods();
-    private static final Map<String, Map<String, By>> pageElementLocators = LocatorRepository.getPageElementLocators();
 
     @Step("Navigate to the <url>")
     public void navigateToURL(String url) {
         logger.info("Navigating to URL: " + url);
-        baseMethods.executeAndLog(() -> driver.get(url), logger, "Navigated to URL: " + url, "Navigation to URL failed: " + url);
+        baseMethods.navigateToURL(url);
     }
 
     @Step("Refresh the current page")
     public void refreshPage() {
         logger.info("Refreshing the current page.");
-        baseMethods.executeAndLog(() -> driver.navigate().refresh(), logger, "Page refreshed successfully.", "Page refresh failed.");
+        baseMethods.refreshPage();
     }
 
     @Step("Switch to the new tab at index <tabIndex>")
@@ -40,12 +39,10 @@ public class BaseSteps extends DriverManager {
         baseMethods.click(page, elementName);
     }
 
-
     @Step("Click on the <page> page's <elementName> element if it exists")
     public void clickIfElementExists(String page, String elementName) {
         baseMethods.clickIfElementExists(page, elementName);
     }
-
 
     @Step("Wait <value> seconds")
     public void waitForSeconds(int value) {
@@ -57,7 +54,9 @@ public class BaseSteps extends DriverManager {
     public void enterTextIntoPageElement(String text, String page, String elementName) {
         logger.info("Entering text '" + text + "' into element '" + elementName + "' on page '" + page + "'.");
         WebElement element = baseMethods.findElement(page, elementName, "visible");
-        baseMethods.executeAndLog(() -> element.sendKeys(text), logger, "Successfully entered text into '" + elementName + "' on page '" + page + "'.", "Failed to enter text into '" + elementName + "' on page '" + page + "'.");
+        baseMethods.executeAndLog(() -> element.sendKeys(text), logger,
+                "Successfully entered text into '" + elementName + "' on page '" + page + "'.",
+                "Failed to enter text into '" + elementName + "' on page '" + page + "'.");
     }
 
     @Step("Scroll down the <page> page and find the <elementName> element")
@@ -71,7 +70,9 @@ public class BaseSteps extends DriverManager {
     public void pressEnterKey(String page, String elementName) {
         logger.info("Pressing Enter key on element '" + elementName + "' on page '" + page + "'.");
         WebElement element = baseMethods.findElement(page, elementName, "visible");
-        baseMethods.executeAndLog(() -> element.sendKeys(Keys.ENTER), logger, "Successfully pressed Enter key on element: " + elementName + " on page: " + page, "Failed to press Enter key on element: " + elementName + " on page: " + page);
+        baseMethods.executeAndLog(() -> element.sendKeys(Keys.ENTER), logger,
+                "Successfully pressed Enter key on element: " + elementName + " on page: " + page,
+                "Failed to press Enter key on element: " + elementName + " on page: " + page);
     }
 
     @Step("Verify <page> page's <elementName> element exists, fail with <errorMessage> if absent")

@@ -17,7 +17,8 @@ Automated Product Purchase Workflow at Best Price
 * The product is added to the cart and its addition is verified
 * Click on "market place product details" page's "go to cart button" element
 * On the "market place shopping cart" page, compare the text of the "basket item price" element to the saved value with key "price on product detail page"
-* Check stock availability and increase product quantity to 2 if possible
+Refresh the current page
+* Adjust product quantity based on stock status and verify price consistency
 
 
 

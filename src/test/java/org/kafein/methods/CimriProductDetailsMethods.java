@@ -10,6 +10,19 @@ import java.util.NoSuchElementException;
 
 public class CimriProductDetailsMethods extends DriverManager {
 
+    private final BaseMethods baseMethods = new BaseMethods();
+
+    public void clickOnCheapestProductMarketplace() {
+        By priceLocator = baseMethods.getLocatorFromPage("cimri product details", "offer prices");
+        By cardContainerLocator = baseMethods.getLocatorFromPage("cimri product details", "offer card container");
+
+        List<WebElement> priceElements = getElementsOrThrow(priceLocator, "price");
+        List<WebElement> containerElements = getElementsOrThrow(cardContainerLocator, "product card");
+
+        int minPriceIndex = findMinPriceIndex(priceElements);
+        clickMarketplaceLogo(containerElements, minPriceIndex);
+    }
+
     public void clickMarketplaceLogo(List<WebElement> containerElements, int minPriceIndex) {
         WebElement marketplaceElement = containerElements.get(minPriceIndex).findElement(By.cssSelector("img"));
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", marketplaceElement);

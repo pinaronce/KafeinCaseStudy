@@ -4,45 +4,109 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kafein.base.DriverManager;
 import org.openqa.selenium.*;
-import java.util.List;
-import java.util.NoSuchElementException;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class MarketPlaceShoppingCartMethods extends DriverManager {
 
-    private final BaseMethods baseMethods = new BaseMethods();
-    protected static final int DEFAULT_TIMEOUT_SECONDS = 20;
     private static final Logger logger = LogManager.getLogger(MarketPlaceShoppingCartMethods.class);
+    private final BaseMethods baseMethods = new BaseMethods();
+    private double originalPrice;
 
-    public List<WebElement> getStockTextElements() {
+    public void adjustProductQuantityBasedOnStock() {
+        WebDriver driver = getDriver();
+
         try {
-            return baseMethods.getElements("market place shopping cart", "basket stock quantity");
-        } catch (NoSuchElementException | TimeoutException e) {
-            logger.warn("Stock text element not found or timed out. Proceeding with default stock status for all products.");
-            return null;
+            originalPrice = getPrice(driver);
+            logger.info("Original price of the product: " + originalPrice);
+
+            WebElement stockTextElement = driver.findElement(By.cssSelector("span[class='pb-quantity']"));
+            String stockText = stockTextElement.getText().trim();
+            logger.info("Stock status: " + stockText);
+
+            if ("son 1 ürün".equalsIgnoreCase(stockText)) {
+                logger.info("Stock is limited to 1 item only. No further action will be taken.");
+            } else {
+                setQuantity(driver, 2);
+            }
+        } catch (NoSuchElementException e) {
+            logger.info("No stock quantity element found, adjusting quantity to 2.");
+            setQuantity(driver, 2);
         }
     }
 
-    public boolean shouldIncreaseQuantity(String stockText, WebElement quantityInput) {
-        int currentQuantity = Integer.parseInt(quantityInput.getAttribute("value").trim());
-        return stockText == null || (!"Son 1 Ürün".equals(stockText) && currentQuantity < 2);
+    public void setQuantity(WebDriver driver, int quantity) {
+        WebElement quantityInput = null;
+        boolean success = false;
+        int attempts = 0;
+
+        while (!success && attempts < 3) {
+            try {
+                quantityInput = new WebDriverWait(driver, Duration.ofSeconds(10))
+                        .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@aria-label='Ürün adedi arttırma']/ancestor::div[contains(@class, 'ty-numeric-counter')]/input[@class='counter-content']")));
+                logger.info("Setting quantity to: " + quantity);
+                clearAndSetQuantity(driver, quantityInput, quantity);
+                success = true;
+            } catch (StaleElementReferenceException e) {
+                attempts++;
+                logger.warn("Trying to recover from a stale element: " + e.getMessage());
+            }
+        }
+
+        if (!success) {
+            throw new RuntimeException("Failed to interact with the quantity input after 3 attempts.");
+        }
     }
 
-    public void increaseQuantity(WebElement increaseButton, WebElement quantityInput, int index) {
-        increaseButton.click();
-        waitForQuantityUpdate(quantityInput, index);
-    }
-
-    public void waitForQuantityUpdate(WebElement quantityInput, int index) {
+    private void clearAndSetQuantity(WebDriver driver, WebElement quantityInput, int quantity) {
+        logger.info("Clearing the quantity input field.");
+        quantityInput.click();
         baseMethods.waitBySeconds(2);
+        quantityInput.sendKeys(Keys.END);
+        baseMethods.waitBySeconds(2);
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].value = '';", quantityInput);
+        baseMethods.waitBySeconds(2);
+        logger.info("Setting new quantity: " + quantity);
+        quantityInput.sendKeys(String.valueOf(quantity));
+        quantityInput.sendKeys(Keys.ENTER);
+        baseMethods.waitBySeconds(2);
+    }
 
-        baseMethods.waitForElement("market place shopping cart", "product quantity text", "visible", DEFAULT_TIMEOUT_SECONDS);
-        int currentQuantity = Integer.parseInt(quantityInput.getAttribute("value").trim());
+    public void verifyQuantity(WebDriver driver, WebElement quantityInput, int expectedQuantity) {
+        baseMethods.waitBySeconds(1);
+        String currentValue = quantityInput.getAttribute("value");
+        logger.info("Verifying quantity. Expected: " + expectedQuantity + ", Actual: " + currentValue);
 
-        if (currentQuantity == 2) {
-            logger.info("Quantity successfully set to 2 for product index: " + index);
+        if (String.valueOf(expectedQuantity).equals(currentValue)) {
+            logger.info("Quantity successfully verified as " + expectedQuantity);
+            double newPrice = getPrice(driver);
+            double calculatedPrice = originalPrice * expectedQuantity;
+            logger.info("Calculated total price: " + calculatedPrice);
+            logger.info("New displayed price: " + newPrice);
+
+            if (Double.compare(newPrice, calculatedPrice) == 0) {
+                logger.info("Price verification successful. New price is as expected: " + newPrice);
+            } else {
+                logger.error("Price verification failed. Expected: " + calculatedPrice + ", but got: " + newPrice);
+                throw new AssertionError("Price verification failed. Expected: " + calculatedPrice + ", but got: " + newPrice);
+            }
         } else {
-            logger.error("Failed to set quantity to 2 for product index: " + index);
-            throw new AssertionError("Expected quantity to be 2, but found " + currentQuantity);
+            logger.error("Quantity verification failed. Expected " + expectedQuantity + ", but was " + currentValue);
+            throw new AssertionError("Quantity verification failed. Expected " + expectedQuantity + ", but was " + currentValue);
         }
+    }
+
+    private double getPrice(WebDriver driver) {
+        String priceText = driver.findElement(By.cssSelector("div[class='pb-basket-item-price']")).getText();
+        double price = Double.parseDouble(priceText.replaceAll("[^0-9,]", "").replace(",", "."));
+        logger.info("Retrieved price: " + price);
+        return price;
+    }
+
+    private WebDriver getDriver() {
+        return driver;
     }
 }

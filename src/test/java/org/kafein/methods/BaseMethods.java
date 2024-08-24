@@ -1,5 +1,6 @@
 package org.kafein.methods;
 
+import org.apache.logging.log4j.LogManager;
 import org.kafein.base.DriverManager;
 import org.kafein.elements.LocatorRepository;
 import org.openqa.selenium.*;
@@ -18,6 +19,9 @@ import org.junit.jupiter.api.Assertions;
 public class BaseMethods extends DriverManager {
     private final Map<String, String> storedValues = new HashMap<>();
     public static final int DEFAULT_TIMEOUT_SECONDS = 20;
+
+    private static final Logger logger = LogManager.getLogger(BaseMethods.class);
+
 
     public WebElement waitForElement(String page, String elementName, String condition, int timeoutInSeconds) {
         By locator = getLocatorFromPage(page, elementName);
@@ -51,6 +55,16 @@ public class BaseMethods extends DriverManager {
 
     public List<WebElement> getElements(String page, String elementName) {
         return waitForElement(page, elementName, "visible", DEFAULT_TIMEOUT_SECONDS).findElements(By.xpath(".//*"));
+    }
+
+    public void navigateToURL(String url) {
+        logger.info("Navigating to URL: " + url);
+        executeAndLog(() -> driver.get(url), logger, "Navigated to URL: " + url, "Navigation to URL failed: " + url);
+    }
+
+    public void refreshPage() {
+        logger.info("Refreshing the current page.");
+        executeAndLog(() -> driver.navigate().refresh(), logger, "Page refreshed successfully.", "Page refresh failed.");
     }
 
     public void saveValue(String saveKey, String value) {
