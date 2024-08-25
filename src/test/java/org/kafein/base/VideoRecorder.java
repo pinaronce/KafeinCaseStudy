@@ -10,7 +10,7 @@ public class VideoRecorder {
     private Process process;
 
     public VideoRecorder() {
-        String directory = ".gauge/videos"; // Directory path for saving videos
+        String directory = ".gauge/videos";
 
         File dir = new File(directory);
 

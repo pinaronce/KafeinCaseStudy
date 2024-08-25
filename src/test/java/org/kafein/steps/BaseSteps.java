@@ -3,16 +3,11 @@ package org.kafein.steps;
 import com.thoughtworks.gauge.Step;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kafein.base.DriverManager;
-import org.kafein.elements.LocatorRepository;
 import org.kafein.methods.BaseMethods;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
-import java.util.Map;
-
-public class BaseSteps extends DriverManager {
+public class BaseSteps {
     private static final Logger logger = LogManager.getLogger(BaseSteps.class);
     private final BaseMethods baseMethods = new BaseMethods();
 
